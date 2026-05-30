@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TopNav } from "@/components/top-nav";
 import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/use-profile";
 import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthenticatedLayout() {
   const { isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
+  const { data: profileData, isLoading: profileLoading } = useProfile();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -20,7 +22,13 @@ function AuthenticatedLayout() {
     }
   }, [loading, isAuthenticated, navigate]);
 
-  if (loading || !isAuthenticated) {
+  useEffect(() => {
+    if (!profileLoading && profileData && profileData.profile?.status !== "approved") {
+      navigate({ to: "/pending", replace: true });
+    }
+  }, [profileLoading, profileData, navigate]);
+
+  if (loading || !isAuthenticated || profileLoading || profileData?.profile?.status !== "approved") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
