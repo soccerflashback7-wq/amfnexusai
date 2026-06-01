@@ -179,7 +179,7 @@ ${contextBlock}`;
                     conversation_id,
                     role: "assistant",
                     content: assistantText,
-                    citations: citations as unknown as object,
+                    citations: citations as any,
                   });
                   await supabase
                     .from("conversations")
