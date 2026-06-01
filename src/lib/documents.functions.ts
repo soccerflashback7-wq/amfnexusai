@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { embedMany, embedOne } from "@/lib/ai/embeddings.server";
+import { embedMany } from "@/lib/ai/embeddings.server";
 import { chunkText } from "@/lib/ai/chunking.server";
 import { extractText } from "@/lib/ai/text-extraction.server";
 
