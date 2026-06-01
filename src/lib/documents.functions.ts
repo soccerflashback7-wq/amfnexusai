@@ -143,13 +143,4 @@ export const deleteDocument = createServerFn({ method: "POST" })
 // -------------------------------------------------------------------
 // Used by chat: embed a query and find similar chunks
 // -------------------------------------------------------------------
-export async function searchChunks(supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any, query: string, matchCount = 6) {
-  const embedding = await embedOne(query);
-  const { data, error } = await supabase.rpc("match_chunks", {
-    query_embedding: embedding as unknown as string,
-    match_count: matchCount,
-    min_similarity: 0.3,
-  });
-  if (error) throw new Error(error.message);
-  return data ?? [];
-}
+// searchChunks lives in chat.server.ts (server-only, not a serverFn)
