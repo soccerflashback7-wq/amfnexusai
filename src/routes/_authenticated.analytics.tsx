@@ -84,8 +84,8 @@ function AnalyticsPage() {
                   <AreaChart data={data?.timeseries ?? []}>
                     <defs>
                       <linearGradient id="qFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="aFill" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="hsl(220 15% 55%)" stopOpacity={0.3} />
@@ -96,18 +96,18 @@ function AnalyticsPage() {
                     <XAxis
                       dataKey="date"
                       tickFormatter={(v) => format(parseISO(v), "MMM d")}
-                      stroke="hsl(var(--muted-foreground))"
+                      stroke="var(--muted-foreground)"
                       fontSize={11}
                     />
                     <YAxis
-                      stroke="hsl(var(--muted-foreground))"
+                      stroke="var(--muted-foreground)"
                       fontSize={11}
                       allowDecimals={false}
                     />
                     <Tooltip
                       contentStyle={{
-                        background: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
+                        background: "var(--card)",
+                        border: "1px solid var(--border)",
                         borderRadius: 8,
                         fontSize: 12,
                       }}
@@ -116,7 +116,7 @@ function AnalyticsPage() {
                     <Area
                       type="monotone"
                       dataKey="questions"
-                      stroke="hsl(var(--primary))"
+                      stroke="var(--primary)"
                       fill="url(#qFill)"
                       strokeWidth={2}
                     />
@@ -166,8 +166,8 @@ function AnalyticsPage() {
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        background: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
+                        background: "var(--card)",
+                        border: "1px solid var(--border)",
                         borderRadius: 8,
                         fontSize: 12,
                       }}
@@ -214,7 +214,7 @@ function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" />
                   <XAxis
                     type="number"
-                    stroke="hsl(var(--muted-foreground))"
+                    stroke="var(--muted-foreground)"
                     fontSize={11}
                     allowDecimals={false}
                   />
@@ -222,19 +222,19 @@ function AnalyticsPage() {
                     type="category"
                     dataKey="title"
                     width={160}
-                    stroke="hsl(var(--muted-foreground))"
+                    stroke="var(--muted-foreground)"
                     fontSize={11}
                     tickFormatter={(v: string) => (v.length > 22 ? v.slice(0, 22) + "…" : v)}
                   />
                   <Tooltip
                     contentStyle={{
-                      background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      background: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: 8,
                       fontSize: 12,
                     }}
                   />
-                  <Bar dataKey="chunks" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="chunks" fill="var(--primary)" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
