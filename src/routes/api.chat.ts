@@ -172,20 +172,28 @@ ${contextBlock}`;
               } catch (e) {
                 console.error("chat stream error:", e);
               } finally {
-                controller.close();
-                // Persist assistant message (fire-and-forget)
+                // Persist assistant message BEFORE closing the stream — in
+                // Worker runtimes, async work after controller.close() can be
+                // terminated, causing the message to never be saved (which
+                // makes the assistant reply disappear after the client
+                // re-fetches the conversation).
                 if (assistantText.trim()) {
-                  await supabase.from("messages").insert({
-                    conversation_id,
-                    role: "assistant",
-                    content: assistantText,
-                    citations: citations as any,
-                  });
-                  await supabase
-                    .from("conversations")
-                    .update({ updated_at: new Date().toISOString() })
-                    .eq("id", conversation_id);
+                  try {
+                    await supabase.from("messages").insert({
+                      conversation_id,
+                      role: "assistant",
+                      content: assistantText,
+                      citations: citations as any,
+                    });
+                    await supabase
+                      .from("conversations")
+                      .update({ updated_at: new Date().toISOString() })
+                      .eq("id", conversation_id);
+                  } catch (persistErr) {
+                    console.error("failed to persist assistant message:", persistErr);
+                  }
                 }
+                controller.close();
               }
             },
           });
