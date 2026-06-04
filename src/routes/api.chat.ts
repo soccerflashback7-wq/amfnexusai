@@ -72,22 +72,25 @@ export const Route = createFileRoute("/api/chat")({
             .limit(20);
 
           // Retrieve relevant chunks
-          const matched = await searchChunks(supabase, message, 6);
+          const matched = await searchChunks(supabase, message, 8);
 
           const contextBlock = matched.length
             ? matched
                 .map(
                   (c, i) =>
-                    `[Source ${i + 1}: ${c.document_title} • chunk ${c.chunk_index}]\n${c.content}`,
+                    `[Source ${i + 1}: ${c.document_title} • chunk ${c.chunk_index} • similarity ${c.similarity.toFixed(2)}]\n${c.content}`,
                 )
                 .join("\n\n---\n\n")
-            : "(no relevant documents found)";
+            : "(no relevant documents found for this specific query)";
 
           const systemPrompt = `You are Nexus, an internal company knowledge assistant.
-Answer the user's question using ONLY the provided sources when relevant. Cite
-sources inline as [1], [2], etc. matching the Source numbers below. If the
-sources do not contain the answer, say so plainly and offer general guidance.
-Keep answers concise and well-formatted in Markdown.
+
+CRITICAL RULES:
+1. The SOURCES below are freshly retrieved for THIS turn. They override any prior turn where you may have said "no information is available". Always re-read them.
+2. If SOURCES contain ANY content that relates to the user's question — even partially — you MUST use it and cite inline as [1], [2], etc.
+3. Only say "I couldn't find information" if SOURCES is literally empty or clearly unrelated.
+4. Do not rely on the previous assistant messages for factual claims — treat SOURCES as the single source of truth.
+5. Answer concisely in Markdown. Cite every factual claim.
 
 SOURCES:
 ${contextBlock}`;
