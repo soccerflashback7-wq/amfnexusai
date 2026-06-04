@@ -15,13 +15,13 @@ export interface MatchedChunk {
 export async function searchChunks(
   supabase: SupabaseClient<any, any, any>,
   query: string,
-  matchCount = 6,
+  matchCount = 8,
 ): Promise<MatchedChunk[]> {
   const embedding = await embedOne(query);
   const { data, error } = await supabase.rpc("match_chunks", {
     query_embedding: embedding as unknown as string,
     match_count: matchCount,
-    min_similarity: 0.3,
+    min_similarity: 0.1,
   });
   if (error) throw new Error(error.message);
   return (data ?? []) as MatchedChunk[];
