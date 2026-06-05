@@ -209,9 +209,10 @@ ${contextBlock}`;
             },
           });
         } catch (e) {
-          const msg = e instanceof Error ? e.message : "Unknown error";
           console.error("/api/chat error:", e);
-          return new Response(JSON.stringify({ error: msg }), { status: 500 });
+          const isZod = e instanceof z.ZodError;
+          const msg = isZod ? "Invalid request" : "Something went wrong. Please try again.";
+          return new Response(JSON.stringify({ error: msg }), { status: isZod ? 400 : 500 });
         }
       },
     },

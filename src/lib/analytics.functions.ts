@@ -35,6 +35,13 @@ export const getDashboardStats = createServerFn({ method: "GET" })
       .select("user_id", { count: "exact", head: true })
       .eq("status", "approved");
 
+    const recentConvsQuery = supabase
+      .from("conversations")
+      .select("id,title,updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(5);
+    if (!isAdmin) recentConvsQuery.eq("user_id", userId);
+
     const [docs, convs, msgs, teammates, recentDocs, recentConvs] = await Promise.all([
       docsQuery,
       convsQuery,
@@ -45,11 +52,7 @@ export const getDashboardStats = createServerFn({ method: "GET" })
         .select("id,title,status,created_at,chunk_count")
         .order("created_at", { ascending: false })
         .limit(5),
-      supabase
-        .from("conversations")
-        .select("id,title,updated_at")
-        .order("updated_at", { ascending: false })
-        .limit(5),
+      recentConvsQuery,
     ]);
 
     return {

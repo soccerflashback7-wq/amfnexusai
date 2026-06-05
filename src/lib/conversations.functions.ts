@@ -33,9 +33,14 @@ export const getConversation = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ conversation_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
     const [{ data: conv, error: cErr }, { data: msgs, error: mErr }] = await Promise.all([
-      supabase.from("conversations").select("*").eq("id", data.conversation_id).single(),
+      supabase
+        .from("conversations")
+        .select("*")
+        .eq("id", data.conversation_id)
+        .eq("user_id", userId)
+        .single(),
       supabase
         .from("messages")
         .select("*")
@@ -53,11 +58,12 @@ export const renameConversation = createServerFn({ method: "POST" })
     z.object({ conversation_id: z.string().uuid(), title: z.string().min(1).max(200) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
     const { error } = await supabase
       .from("conversations")
       .update({ title: data.title })
-      .eq("id", data.conversation_id);
+      .eq("id", data.conversation_id)
+      .eq("user_id", userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -66,8 +72,12 @@ export const deleteConversation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ conversation_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
-    const { error } = await supabase.from("conversations").delete().eq("id", data.conversation_id);
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("conversations")
+      .delete()
+      .eq("id", data.conversation_id)
+      .eq("user_id", userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
