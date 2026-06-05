@@ -1,27 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "runtime": "nodejs20.x",
-        "handler": "dist/server/index.mjs"
-      }
-    },
-    {
-      "src": "dist/client/**",
-      "use": "@vercel/static"
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs20.x"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/assets/(.*)",
       "dest": "/dist/client/assets/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/dist/client/favicon.ico"
     },
     {
       "src": "/(.*)",
