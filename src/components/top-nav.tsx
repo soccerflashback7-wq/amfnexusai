@@ -38,14 +38,28 @@ export function TopNav() {
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-3 backdrop-blur-md sm:px-5">
       <SidebarTrigger className="-ml-1" />
       <div className="hidden flex-1 md:block">
-        <div className="relative max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search knowledge base..."
-            className="h-9 rounded-full border-border/70 bg-muted/40 pl-9 text-sm shadow-none focus-visible:ring-1"
-          />
-        </div>
+        <button
+          type="button"
+          onClick={() => setPaletteOpen(true)}
+          className="group relative flex h-9 w-full max-w-md items-center gap-2 rounded-full border border-border/70 bg-muted/40 pl-9 pr-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/60"
+          aria-label="Open search"
+        >
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <span className="flex-1 truncate">Search knowledge base…</span>
+          <kbd className="hidden items-center gap-0.5 rounded border bg-background/80 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex">
+            ⌘K
+          </kbd>
+        </button>
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden"
+        onClick={() => setPaletteOpen(true)}
+        aria-label="Search"
+      >
+        <Search className="h-4 w-4" />
+      </Button>
       <div className="ml-auto flex items-center gap-1.5">
         <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
