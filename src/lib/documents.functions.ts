@@ -69,13 +69,14 @@ export const ingestDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ document_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
     const { data: doc, error: dErr } = await supabase
       .from("documents")
       .select("*")
       .eq("id", data.document_id)
+      .eq("owner_id", userId)
       .single();
-    if (dErr || !doc) throw new Error(dErr?.message ?? "Document not found");
+    if (dErr || !doc) throw new Error("Document not found or access denied");
 
     await supabase.from("documents").update({ status: "processing", error_message: null }).eq("id", doc.id);
 
@@ -126,13 +127,21 @@ export const deleteDocument = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ document_id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
-    const { data: doc, error: dErr } = await supabase
+    const { supabase, userId } = context;
+    // Check admin status for elevated deletes
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const isAdmin = (roles ?? []).some((r) => r.role === "admin" || r.role === "super_admin");
+
+    const query = supabase
       .from("documents")
-      .select("id,storage_path")
-      .eq("id", data.document_id)
-      .single();
-    if (dErr || !doc) throw new Error(dErr?.message ?? "Document not found");
+      .select("id,storage_path,owner_id")
+      .eq("id", data.document_id);
+    if (!isAdmin) query.eq("owner_id", userId);
+    const { data: doc, error: dErr } = await query.single();
+    if (dErr || !doc) throw new Error("Document not found or access denied");
 
     await supabase.storage.from("documents").remove([doc.storage_path]);
     const { error: delErr } = await supabase.from("documents").delete().eq("id", doc.id);
