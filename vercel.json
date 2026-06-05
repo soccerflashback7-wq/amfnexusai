@@ -1,9 +1,18 @@
 {
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs20.x"
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/start.js",
+      "use": "@vercel/node",
+      "config": {
+        "runtime": "nodejs20.x"
+      }
+    },
+    {
+      "src": "dist/client/**",
+      "use": "@vercel/static"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/assets/(.*)",
@@ -11,7 +20,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/client/index.html"
+      "dest": "/api/start.js"
     }
   ]
 }
