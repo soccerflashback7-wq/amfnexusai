@@ -204,8 +204,14 @@ function ConversationView({
   const messages = liveMessages.length > 0 ? liveMessages : persisted;
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages.length, messages[messages.length - 1]?.content]);
+    const root = scrollRef.current;
+    if (!root) return;
+    const viewport = root.querySelector<HTMLElement>(
+      "[data-radix-scroll-area-viewport]",
+    );
+    const target = viewport ?? root;
+    target.scrollTo({ top: target.scrollHeight, behavior: "smooth" });
+  }, [messages.length, messages[messages.length - 1]?.content, streaming]);
 
   async function handleSend() {
     const text = input.trim();
